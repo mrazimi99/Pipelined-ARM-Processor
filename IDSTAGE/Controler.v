@@ -10,10 +10,12 @@ always @ ( mode, op_code, s ) begin
     case (s)
         1'b 1:begin status_en = s; // LDR : Load Register
                     mem_read = 1'b 1;
+                    aluCommand = 4'b 0010;
                     wb_en = 1;
               end
         1'b 0:begin status_en = s; // STR : Store Register
                     mem_write = 1'b 1;
+                    aluCommand = 4'b 0010;
               end
     endcase
   else
@@ -21,37 +23,37 @@ always @ ( mode, op_code, s ) begin
       4'b 0000: {aluCommand, mem_read, mem_write, wb_en, branch, status_en} = 0;
 
       4'b 1101: begin status_en = s;  // MOV : Move
-                      aluCommand = 4'b 1010;
+                      aluCommand = 4'b 0001;
                       wb_en = 1;
                 end
 
       4'b 1111: begin status_en = s; // MVN : BitWise Not and Move
-                      aluCommand = 4'b 1011;
+                      aluCommand = 4'b 1001;
                       wb_en = 1;
                 end
 
       4'b 0100: begin status_en = s;  // ADD : Add
-                     aluCommand = 4'b 0001;
+                     aluCommand = 4'b 0010;
                      wb_en = 1;
                end
 
       4'b 0101:begin status_en = s;  // ADC : Add with Carry
-                     aluCommand = 4'b 0010;
+                     aluCommand = 4'b 0011;
                      wb_en = 1'b 1;
                end
 
       4'b 0010:begin status_en = s; // SUB : Subtraction
-                     aluCommand = 4'b 0011;
-                     wb_en = 1'b 1;
-              end
-
-      4'b 0110:begin status_en = s; // SBC : Subtraction with Carry
                      aluCommand = 4'b 0100;
                      wb_en = 1'b 1;
               end
 
-      4'b 0000:begin status_en = s; // AND : And
+      4'b 0110:begin status_en = s; // SBC : Subtraction with Carry
                      aluCommand = 4'b 0101;
+                     wb_en = 1'b 1;
+              end
+
+      4'b 0000:begin status_en = s; // AND : And
+                     aluCommand = 4'b 0110;
                      wb_en = 1'b 1;
               end
 
@@ -66,11 +68,11 @@ always @ ( mode, op_code, s ) begin
               end
 
       4'b 1010:begin status_en = 1'b 1; // CMP : Compare
-                     aluCommand = 4'b 1001;
+                     aluCommand = 4'b 0100;
                      wb_en = 1'b 1;
               end
-      4'b 1000: begin status_en = 1;// TST : TEST
-                      aluCommand = 4'b 1100;
+      4'b 1000: begin status_en = 1; // TST : TEST
+                      aluCommand = 4'b 0110;
                 end
 
       default: {aluCommand, mem_read, mem_write, wb_en, branch, status_en} = 0;
