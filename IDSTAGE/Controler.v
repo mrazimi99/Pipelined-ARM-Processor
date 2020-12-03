@@ -16,7 +16,7 @@ module ControlUnit (input[1: 0] mode, input[3: 0] op_code, input s,
     {alu_mode, inner_mem_read, inner_mem_write, inner_wb_en, inner_branch, inner_status_en} <= 9'b 0;
     if (mode == 2'b 10) //B : Branch
       inner_branch <= 1'b 1;
-    else if (mode == 2'b 01)
+    else if (mode == 2'b 01) begin
       case (s)
           1'b 1:begin inner_status_en <= s; // LDR : Load Register
                       inner_mem_read <= 1'b 1;
@@ -28,7 +28,8 @@ module ControlUnit (input[1: 0] mode, input[3: 0] op_code, input s,
                       alu_mode <= 4'b 0010;
                 end
       endcase
-    else
+    end
+    else begin
       case (op_code)
       4'b 0000: {alu_mode, inner_mem_read, inner_mem_write, inner_wb_en, inner_branch, inner_status_en} <= 9'b 0;
 
@@ -87,6 +88,6 @@ module ControlUnit (input[1: 0] mode, input[3: 0] op_code, input s,
 
         default: {alu_mode, inner_mem_read, inner_mem_write, inner_wb_en, inner_branch, inner_status_en} <= 9'b 0;
       endcase
-
+    end
   end
 endmodule // ControlUnit

@@ -1,9 +1,15 @@
-module ConditionCheck (input[3: 0] condition, status, output reg result);
+module ConditionCheck (input[3: 0] condition, status, output out_result);
 
-  wire n_flag = status[3];
-  wire z_flag = status[2];
-  wire c_flag = status[1];
-  wire v_flag = status[0];
+  wire n_flag;
+  assign n_flag = status[3];
+  wire z_flag;
+  assign z_flag = status[2];
+  wire c_flag;
+  assign c_flag = status[1];
+  wire v_flag;
+  assign v_flag = status[0];
+  reg result;
+  assign out_result = result;
 
   always @ ( condition ) begin
   case (condition)
