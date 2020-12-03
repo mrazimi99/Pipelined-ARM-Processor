@@ -33,7 +33,7 @@ module IDSTAGE (input clk, rst, write_back_en, hazard, input[31: 0] pc_in, instr
                                   .result(cond_result));
 
   ControlUnit controler(.mode(instruction[27 :26]), .op_code(instruction[24: 21]), .s(instruction[20]),
-                        .aluCommand(c_aluCommand), .mem_read(c_mem_read),
+                        .alu_command(c_aluCommand), .mem_read(c_mem_read),
                         .mem_write(c_mem_write), .wb_en(c_wb_en), .branch(c_branch),
                         .status_en(c_status_en));
 
