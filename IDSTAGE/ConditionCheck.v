@@ -41,7 +41,7 @@ module ConditionCheck (input[3: 0] condition, status, output out_result);
 
     4'b 1101: result = (z_flag & (n_flag != v_flag)) ;   // LE : Signed Less than or Equal
 
-    4'b 1110 , 4'b 1111: result = v_flag ;   // VS : Overflow
+    4'b 1110 , 4'b 1111: result = 1'b 1 ;   // AL : Always
 
     default: result = 1'b 0;
   endcase
