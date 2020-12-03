@@ -1,5 +1,5 @@
 module IDSTAGE (input clk, rst, write_back_en, hazard, input[31: 0] pc_in, instruction,
-                reg_data_wb, input[3 :0] dest_wb, output[31: 0] pc, reg1, reg2,
+                reg_data_wb, input[3 :0] dest_wb, status, output[31: 0] pc, reg1, reg2,
                 output[3: 0] aluCommand, dest, output status_en, mem_read, mem_write,
                 wb_en, branch, I, output[23: 0] b_signed_imm, output[11: 0] shifter_operand);
 
@@ -28,8 +28,8 @@ module IDSTAGE (input clk, rst, write_back_en, hazard, input[31: 0] pc_in, instr
   assign dest = instruction[15: 12];
 
 
-  ConditionCheck conditionchecker(.cond(instruction[31: 28]),
-                                  .status(instruction[20]),
+  ConditionCheck conditionchecker(.condition(instruction[31: 28]),
+                                  .status(status),
                                   .result(cond_result));
 
   ControlUnit controler(.mode(instruction[27 :26]), .op_code(instruction[24: 21]), .s(instruction[20]),
@@ -42,6 +42,6 @@ module IDSTAGE (input clk, rst, write_back_en, hazard, input[31: 0] pc_in, instr
   assign src2 = c_mem_write? instruction[15: 12]: instruction[3: 0];  // c_mem_write? Rd(STR): Rm;
   RegisterFile registerfile(.clk(clk), .rst(rst), .write_back_en(write_back_en),
                             .src1(instruction[19: 16]), .src2(src2), .dest_wb(dest_wb),
-                            .reg_wb(reg_data_wb), .reg1(reg1), .reg2(reg2));
+                            .result_wb(reg_data_wb), .reg1(reg1), .reg2(reg2));
 
 endmodule // IDSTAGE

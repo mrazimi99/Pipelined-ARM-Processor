@@ -1,4 +1,4 @@
-module ConditionCheck (input[3: 0] condition, input[3 :0] status, output reg result);
+module ConditionCheck (input[3: 0] condition, status, output reg result);
 
   wire n_flag = status[3];
   wire z_flag = status[2];
