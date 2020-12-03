@@ -11,8 +11,7 @@ module IDSTAGE (input clk, rst, write_back_en, hazard, input[31: 0] pc_in, instr
   assign shifter_operand = instruction[11 :0];
 
 
-  wire is_ok;
-  reg cond_result;
+  wire is_ok, cond_result;
   assign is_ok = ~cond_result | hazard;
 
   wire c_mem_read, c_mem_write, c_branch, c_wb_en, c_status_en;

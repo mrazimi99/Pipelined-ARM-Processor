@@ -1,4 +1,4 @@
-module ConditionCheck (input[3: 0] condition, status, output reg result);
+module ConditionCheck (input[3: 0] condition, status, output result_out);
 
   wire n_flag;
   assign n_flag = status[3];
@@ -8,8 +8,8 @@ module ConditionCheck (input[3: 0] condition, status, output reg result);
   assign c_flag = status[1];
   wire v_flag;
   assign v_flag = status[0];
-  // reg result;
-  // assign out_result = result;
+  reg result;
+  assign out_result = result;
 
   always @ ( condition, status ) begin
   case (condition)
