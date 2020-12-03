@@ -11,7 +11,8 @@ module IDSTAGE (input clk, rst, write_back_en, hazard, input[31: 0] pc_in, instr
   assign shifter_operand = instruction[11 :0];
 
 
-  wire is_ok, cond_result;
+  wire is_ok;
+  reg cond_result;
   assign is_ok = ~cond_result | hazard;
 
   wire c_mem_read, c_mem_write, c_branch, c_wb_en, c_status_en;
@@ -30,7 +31,7 @@ module IDSTAGE (input clk, rst, write_back_en, hazard, input[31: 0] pc_in, instr
 
   ConditionCheck conditionchecker(.condition(instruction[31: 28]),
                                   .status(status),
-                                  .out_result(cond_result));
+                                  .result(cond_result));
 
   ControlUnit controler(.mode(instruction[27 :26]), .op_code(instruction[24: 21]), .s(instruction[20]),
                         .alu_command(c_aluCommand), .mem_read(c_mem_read),
