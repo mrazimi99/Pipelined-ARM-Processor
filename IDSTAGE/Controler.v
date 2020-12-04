@@ -31,19 +31,19 @@ module ControlUnit (input[1: 0] mode, input[3: 0] op_code, input s,
     end
     else begin
       case (op_code)
-      4'b 0000: {alu_mode, inner_mem_read, inner_mem_write, inner_wb_en, inner_branch, inner_status_en} <= 9'b 0;
+      // 4'b 0000: {alu_mode, inner_mem_read, inner_mem_write, inner_wb_en, inner_branch, inner_status_en} <= 9'b 0;
 
-        4'b 1101: begin inner_status_en <= s;  // MOV : Move
+        4'b 1101:begin inner_status_en <= s;  // MOV : Move
                         alu_mode <= 4'b 0001;
                         inner_wb_en <= 1;
-                  end
+                 end
 
-        4'b 1111: begin inner_status_en <= s; // MVN : BitWise Not and Move
+        4'b 1111:begin inner_status_en <= s;  // MVN : BitWise Not and Move
                         alu_mode <= 4'b 1001;
                         inner_wb_en <= 1;
-                  end
+                 end
 
-        4'b 0100: begin inner_status_en <= s;  // ADD : Add
+        4'b 0100:begin inner_status_en <= s;  // ADD : Add
                        alu_mode <= 4'b 0010;
                        inner_wb_en <= 1;
                  end
@@ -53,38 +53,39 @@ module ControlUnit (input[1: 0] mode, input[3: 0] op_code, input s,
                        inner_wb_en <= 1'b 1;
                  end
 
-        4'b 0010:begin inner_status_en <= s;
+        4'b 0010:begin inner_status_en <= s;  // SUB : Subtraction
                        alu_mode <= 4'b 0100;
                        inner_wb_en <= 1'b 1;
-                end// SUB : Subtraction
+                 end
 
-        4'b 0110:begin inner_status_en <= s; // SBC : Subtraction with Carry
+        4'b 0110:begin inner_status_en <= s;  // SBC : Subtraction with Carry
                        alu_mode <= 4'b 0101;
                        inner_wb_en <= 1'b 1;
-                end
+                 end
 
-        4'b 0000:begin inner_status_en <= s; // AND : And
+        4'b 0000:begin inner_status_en <= s;  // AND : And
                        alu_mode <= 4'b 0110;
                        inner_wb_en <= 1'b 1;
-                end
+                 end
 
-        4'b 1100:begin inner_status_en <= s; // ORR : Or
+        4'b 1100:begin inner_status_en <= s;  // ORR : Or
                        alu_mode <= 4'b 0111;
                        inner_wb_en <= 1'b 1;
-                end
+                 end
 
-        4'b 0001:begin inner_status_en <= s; // EOR : Exlusive OR
+        4'b 0001:begin inner_status_en <= s;  // EOR : Exlusive OR
                        alu_mode <= 4'b 1000;
                        inner_wb_en <= 1'b 1;
-                end
+                 end
 
         4'b 1010:begin inner_status_en <= 1'b 1; // CMP : Compare
                        alu_mode <= 4'b 0100;
                        inner_wb_en <= 1'b 1;
-                end
-        4'b 1000: begin inner_status_en <= 1; // TST : TEST
-                        alu_mode <= 4'b 0110;
-                  end
+                 end
+
+        4'b 1000:begin inner_status_en <= 1;  // TST : TEST
+                       alu_mode <= 4'b 0110;
+                 end
 
         default: {alu_mode, inner_mem_read, inner_mem_write, inner_wb_en, inner_branch, inner_status_en} <= 9'b 0;
       endcase

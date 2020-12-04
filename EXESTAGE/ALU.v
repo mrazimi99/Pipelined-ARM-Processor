@@ -1,4 +1,4 @@
-module ALU (input[3: 0] command, status_in, input[31: 0] operand1, operand2,
+module ALU (input[3: 0] command, status_in, input signed[31: 0] operand1, operand2,
             output[3: 0] status, output reg[31: 0] result);
 
   reg c_flag, v_flag;
@@ -10,20 +10,36 @@ module ALU (input[3: 0] command, status_in, input[31: 0] operand1, operand2,
   assign status = {n_flag, z_flag, c_flag, v_flag};
 
   always @ ( command, operand1, operand2 ) begin
+    {result, c_flag, v_flag} = 0;
     case (command)
-      // TODO: calculate the c , v flags
 
       4'b 0001: result = operand2 ; // MOV : Move
 
       4'b 1001: result = ~operand2; // MVN : BitWise Not and Move
 
-      4'b 0010: {c_flag, result} = operand1 + operand2 ; // ADD
+      4'b 0010: begin   // ADD
+                  {c_flag, result} = operand1 + operand2 ;
+                  v_flag = (~(operand1[31] ^ operand2[31]) & ~(operand1[31] ^ result[31])) ?
+                                1'b 1 : 1'b 0;
+                end
 
-      4'b 0011: {c_flag, result} = operand1 + operand2 + status_in[1] ; // ADC : Add with Carry
+      4'b 0011: begin   // ADC : Add with Carry
+                  {c_flag, result} = operand1 + operand2 + status_in[1] ;
+                  v_flag = (~(operand1[31] ^ operand2[31]) & ~(operand1[31] ^ result[31])) ?
+                    1'b 1 : 1'b 0;
+                  end
 
-      4'b 0100: result = operand1 - operand2;     // SUB : Subtraction
+      4'b 0100: begin   // SUB : Subtraction
+                  result = operand1 - operand2;
+                  v_flag = ((operand1[31] ^ operand2[31]) & ~(operand2[31] ^ result[31])) ?
+                    1'b 1 : 1'b 0;
+                end
 
-      4'b 0101: result = operand1 - operand2 - 1; // SBC : Subtraction with Carry
+      4'b 0101: begin   // SBC : Subtraction with Carry
+                  result = operand1 - operand2 - 1;
+                  v_flag = ((operand1[31] ^ operand2[31]) & ~(operand2[31] ^ result[31])) ?
+                    1'b 1 : 1'b 0;
+                end
 
       4'b 0110: result = operand1 & operand2;     // AND : And
 

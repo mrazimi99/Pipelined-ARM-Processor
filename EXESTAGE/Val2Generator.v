@@ -3,7 +3,7 @@ module Val2Generator (input I, mem_en, input[11: 0] shifter, input[31: 0] regist
 
   reg [31: 0] im_result, not_im_result;
   wire[31: 0] offset;
-  SignExtend signExtend(shifter, offset);
+  SignExtend#(.N(12)) signExtend(shifter, offset);
 
   assign result = mem_en ? offset :
                        I ? im_result : not_im_result;
@@ -17,7 +17,7 @@ module Val2Generator (input I, mem_en, input[11: 0] shifter, input[31: 0] regist
   end
 
   integer rot_round, j;
-  always @ ( shifter ) begin
+  always @ ( shifter, register ) begin
     rot_round = shifter[11: 7];
     not_im_result = register;
     case (shifter[6: 5])
@@ -25,8 +25,8 @@ module Val2Generator (input I, mem_en, input[11: 0] shifter, input[31: 0] regist
       2'b 01: not_im_result = not_im_result >> rot_round; // Logical shift right
       2'b 10: not_im_result = not_im_result >>> rot_round; // Arithmetic shift right
       2'b 11: begin
-                    for( j=0 ; j < rot_round; j=j+1)
-                      not_im_result = {not_im_result[0], not_im_result[31: 1]};
+                for( j=0 ; j < rot_round; j=j+1)
+                  not_im_result = {not_im_result[0], not_im_result[31: 1]};
               end
       default: ;
     endcase
