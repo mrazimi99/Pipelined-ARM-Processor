@@ -32,10 +32,10 @@ module ARM_CPU(input clk ,rst);
 
   wire wb_en_id_in, status_en_id_out, mem_read_id_out, mem_write_id_out,
        branch_id_out, I_id_out;
-  wire [3: 0] dest_wb_id_in, alu_command_id_out, dest_id_out;
+  wire [3: 0] dest_id_in, alu_command_id_out, dest_id_out;
   wire [11: 0] shifter_operand_id_out;
   wire [23: 0] b_signed_imm_id_out;
-  wire [31: 0] data_wb_id_in, reg1_id_out, reg2_id_out;
+  wire [31: 0] wb_data_id_in, reg1_id_out, reg2_id_out;
 
   IDSTAGE idSTAGE(.clk(clk),
                   .rst(rst),
@@ -43,8 +43,8 @@ module ARM_CPU(input clk ,rst);
                   .hazard(0),
                   .pc_in(pc_in_id),
                   .instruction(instruction_id_in),
-                  .reg_data_wb(data_wb_id_in),
-                  .dest_wb(dest_wb_id_in),
+                  .reg_data_wb(wb_data_id_in),
+                  .dest_wb(dest_id_in),
                   .status(status_reg),
                   .pc(pc_id_out),
                   .reg1(reg1_id_out),
@@ -115,7 +115,7 @@ module ARM_CPU(input clk ,rst);
                     .status_out(status_exe_out));
 
 
-  wire wb_en_mem_in, mem_read_mem_in, mem_write_mem_in;
+  wire wb_en_mem_wb, mem_read_mem_in, mem_write_mem_in;
   wire [3: 0] dest_mem_wb;
   wire[31: 0] result_mem_in, reg2_mem_in;
   EXE2MEM exe2mem(.clk(clk),
@@ -125,18 +125,41 @@ module ARM_CPU(input clk ,rst);
                   .mem_write_in(mem_write_exe_in),
                   .dest_in(dest_id_mem),
                   .result_in(result_exe_out),
-                  .wb_en_out(wb_en_mem_in),
+                  .wb_en_out(wb_en_mem_wb),
                   .mem_read_out(mem_read_mem_in),
                   .mem_write_out(mem_write_mem_in),
                   .dest_out(dest_mem_wb),
                   .result_out(result_mem_in),
                   .reg2_out(reg2_mem_in));
 
-  // MEMstage memSTAGE(.clk(clk) , .rst(rst), .pc_in(pc_in_mem), .pc(pc_out_mem));
+  wire [31: 0] mem_data_out;
+  MEMstage memSTAGE(.clk(clk),
+                    .rst(rst),
+                    .write_en(mem_write_mem_in),
+                    .read_en(mem_read_mem_in),
+                    .input_data(reg2_mem_in),
+                    .address(result_mem_in),
+                    .data(mem_data_out));
 
-  // wire[31: 0] pc_in_wb, pc_out_wb;
-  // MEM2WB mem2wb(.clk(clk), .rst(rst), .pc_in(pc_out_mem), .pc(pc_in_wb));
 
-  // WBstage wbSTAGE(.clk(clk), .rst(rst), .pc_in(pc_in_wb), .pc(pc_out_wb));
+  wire mem_read_wb_in;
+  wire[31: 0] mem_data_wb_in, alu_result_wb_in;
+  MEM2WB mem2wb(.clk(clk),
+                .rst(rst),
+                .wb_en_in(wb_en_mem_wb),
+                .mem_read_in(mem_read_mem_in),
+                .dest_in(dest_mem_wb),
+                .alu_result_in(result_mem_in),
+                .mem_data_in(mem_data_out),
+                .wb_en_out(wb_en_id_in),
+                .mem_read_out(mem_read_wb_in),
+                .dest_out(dest_id_in),
+                .mem_data_out(mem_data_wb_in),
+                .alu_result_out(alu_result_wb_in));
+
+  WBstage wbSTAGE(.mem_read(mem_read_wb_in),
+                  .alu_result(alu_result_wb_in),
+                  .mem_data(mem_data_wb_in),
+                  .result(wb_data_id_in));
 
 endmodule

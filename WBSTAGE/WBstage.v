@@ -1,5 +1,6 @@
-module WBstage (input clk, rst, input[31: 0] pc_in, output[31: 0] pc);
+module WBstage (input mem_read, input[31: 0] alu_result, mem_data,
+                output[31: 0] result);
 
-  assign pc = pc_in;
+assign result = mem_read ? mem_data : mem_read;
 
 endmodule // WBstage
