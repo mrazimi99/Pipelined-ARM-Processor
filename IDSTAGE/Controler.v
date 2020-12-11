@@ -80,7 +80,7 @@ module ControlUnit (input[1: 0] mode, input[3: 0] op_code, input s,
 
         4'b 1010:begin inner_status_en <= 1'b 1; // CMP : Compare
                        alu_mode <= 4'b 0100;
-                       inner_wb_en <= 1'b 1;
+                       //inner_wb_en <= 1'b 1;
                  end
 
         4'b 1000:begin inner_status_en <= 1;  // TST : TEST

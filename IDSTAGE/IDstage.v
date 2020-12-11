@@ -12,7 +12,7 @@ module IDSTAGE (input clk, rst, write_back_en, hazard, input[31: 0] pc_in, instr
 
 
   wire is_ok, cond_result;
-  assign is_ok = ~cond_result | hazard;
+  assign is_ok = (~cond_result | hazard) & (|instruction);
 
   wire c_mem_read, c_mem_write, c_branch, c_wb_en, c_status_en;
   wire[3: 0] c_aluCommand;

@@ -8,7 +8,7 @@ module MEMstage (input clk, rst, write_en, read_en, input[31: 0] input_data,
   integer i;
   always @ (posedge clk, posedge rst) begin
     if (rst)
-      for(i = 0 ; i < 64*1024 ; i = i+1) registers[i] = 0;
+      for(i = 0 ; i < 64*1024 ; i = i+1) registers[i] = i;
     if (write_en)
       registers[address] <= input_data;
   end
