@@ -31,8 +31,8 @@ module ARM_CPU(input clk ,rst);
               .instruction(instruction_id_in));
 
   wire wb_en_id_in, status_en_id_out, mem_read_id_out, mem_write_id_out,
-       branch_id_out, I_id_out;
-  wire [3: 0] dest_id_in, alu_command_id_out, dest_id_out;
+       branch_id_out, I_id_out, two_src;
+  wire [3: 0] dest_id_in, alu_command_id_out, dest_id_out, src1, src2;
   wire [11: 0] shifter_operand_id_out;
   wire [23: 0] b_signed_imm_id_out;
   wire [31: 0] wb_data_id_in, reg1_id_out, reg2_id_out;
@@ -51,12 +51,15 @@ module ARM_CPU(input clk ,rst);
                   .reg2(reg2_id_out),
                   .aluCommand(alu_command_id_out),
                   .dest(dest_id_out),
+                  .src1(src1),
+                  .src2(src2),
                   .status_en(status_en_id_out),
                   .mem_read(mem_read_id_out),
                   .mem_write(mem_write_id_out),
                   .wb_en(wb_en_id_out),
                   .branch(branch_id_out),
                   .I(I_id_out),
+                  .two_src(two_src),
                   .b_signed_imm(b_signed_imm_id_out),
                   .shifter_operand(shifter_operand_id_out));
 
