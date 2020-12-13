@@ -4,7 +4,7 @@ module TestBench ();
   always #5 clk=~clk;
   always begin
     rst = 1; clk=1;#20
-    rst= 0; #820
+    rst= 0; #220
     $stop;
   end
 endmodule // TestBench
