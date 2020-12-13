@@ -6,8 +6,6 @@ module IDSTAGE (input clk, rst, write_back_en, hazard, input[31: 0] pc_in, instr
   assign pc = pc_in;
 
   assign two_src = ~I | mem_write;
-  assign src1 = instruction[19: 16];
-  assign src2 = reg_src2;
 
   // Immidate
   assign I = instruction[25];
@@ -47,5 +45,8 @@ module IDSTAGE (input clk, rst, write_back_en, hazard, input[31: 0] pc_in, instr
   RegisterFile registerfile(.clk(clk), .rst(rst), .write_back_en(write_back_en),
                             .src1(instruction[19: 16]), .src2(reg_src2), .dest_wb(dest_wb),
                             .result_wb(reg_data_wb), .reg1(reg1), .reg2(reg2));
+
+  assign src1 = instruction[19: 16];
+  assign src2 = reg_src2;
 
 endmodule // IDSTAGE

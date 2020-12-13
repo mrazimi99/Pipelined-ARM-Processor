@@ -171,7 +171,7 @@ module ARM_CPU(input clk ,rst);
                                              .src2(src2),
                                              .Exe_Dest(dest_id_mem),
                                              .Mem_Dest(dest_mem_wb),
-                                             .Mem_WB_EN(wb_en_mem_wb)
+                                             .Mem_WB_EN(wb_en_mem_wb),
                                              .Exe_WB_EN(wb_en_id_mem),
                                              .two_src(two_src),
                                              .hazard_detected(hazard_detected));
