@@ -3,5 +3,5 @@ module HazardDetectionUnit(input [4:0] src1, src2, Exe_Dest, Mem_Dest,
 
 	assign hazard_detected = Exe_WB_EN == 1'b1 ? (src1 == Exe_Dest || (double_source == 1'b1 && src2 == Exe_Dest == 1'b1))
 			: Mem_WB_EN == 1'b1 ? (src1 == Mem_Dest || (double_source == 1'b1 && src2 == Mem_Dest))
-			: 0;
+			: 1'b0;
 endmodule
