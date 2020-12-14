@@ -15,6 +15,6 @@ module EXEstage (input I, mem_read, mem_write, input[3: 0] aluCommand, status_in
 
   SignExtend#(.N(24)) signExtend(.in(b_signed_imm), .out(b_address));
 
-  assign branch_address = pc_in + b_address; // Adder in the map!!
+  assign branch_address = pc_in + (b_address << 2) + 4; // Adder in the map!!
 
 endmodule // EXEstage
