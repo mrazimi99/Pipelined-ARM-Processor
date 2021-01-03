@@ -19,26 +19,26 @@ module ALU (input[3: 0] command, status_in, input signed[31: 0] operand1, operan
 
       4'b 0010: begin   // ADD
                   {c_flag, result} = operand1 + operand2 ;
-                  v_flag = (operand1[31] & operand2[31] & ~result[31]) |
-                           (~operand1[31] & ~operand2[31] & result[31]);
+                  v_flag = ((operand1[31] == operand2[31])
+                            & (result[31] != operand1[31]));
                 end
 
       4'b 0011: begin   // ADC : Add with Carry
                   {c_flag, result} = operand1 + operand2 + status_in[1] ;
-                  v_flag = (operand1[31] & operand2[31] & ~result[31]) |
-                           (~operand1[31] & ~operand2[31] & result[31]);
+                  v_flag = ((operand1[31] == operand2[31])
+                            & (result[31] != operand1[31]));
                   end
 
       4'b 0100: begin   // SUB : Subtraction
-                  result = operand1 - operand2;
-                  v_flag = (operand1[31] & operand2[31] & ~result[31]) |
-                           (~operand1[31] & ~operand2[31] & result[31]);
+                  {c_flag, result} = {operand1[31], operand1} - {operand2[31], operand2};
+                  v_flag = ((operand1[31] == ~operand2[31])
+                            & (result[31] != operand1[31]));
                 end
 
       4'b 0101: begin   // SBC : Subtraction with Carry
-                  result = operand1 - operand2 - 1;
-                  v_flag = (operand1[31] & operand2[31] & ~result[31]) |
-                           (~operand1[31] & ~operand2[31] & result[31]);
+                  {c_flag, result} = {operand1[31], operand1} - {operand2[31], operand2} - 33'd1;
+                  v_flag = ((operand1[31] == ~operand2[31])
+                            & (result[31] != operand1[31]));
                 end
 
       4'b 0110: result = operand1 & operand2;     // AND : And
