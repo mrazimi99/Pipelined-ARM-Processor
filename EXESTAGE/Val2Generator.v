@@ -24,11 +24,10 @@ module Val2Generator (input I, mem_en, input[11: 0] shifter, input[31: 0] regist
       2'b 00: not_im_result = not_im_result << rot_round; // Logical shift left
       2'b 01: not_im_result = not_im_result >> rot_round; // Logical shift right
       2'b 10: begin // Arithmetic shift right
-                //not_im_result[31-rot_round: 0] = not_im_result[31: rot_round];
-                for( j=0 ; j < (31-rot_round+1); j=j+1)
-                  not_im_result[31-rot_round-j] = not_im_result[31-j];
+                not_im_result = not_im_result >> rot_round;
+
                 for(j=0 ; j < rot_round; j=j+1)
-                  not_im_result[31-j] = not_im_result[31];
+                  not_im_result[31-j] = not_im_result[31 - rot_round];
               end
       2'b 11: begin
                 for( j=0 ; j < rot_round; j=j+1)
