@@ -2,7 +2,7 @@ module ARM_CPU(input clk ,rst);
 
   wire status_enable, flush;
   wire [3: 0] status_exe_out, status_reg;
-  wire hazard_detected;
+  wire hazard_detected, hazard;
   StatusRegister statusRegister(.clk(clk),
                                 .rst(rst),
                                 .enable(status_enable),
@@ -15,7 +15,7 @@ module ARM_CPU(input clk ,rst);
   wire [31: 0] instruction_if_out, pc_out_if, branch_address_exe_out;
   IFSTAGE ifStage(.clk(clk),
                   .rst(rst),
-                  .freeze(hazard_detected),
+                  .freeze(hazard),
                   .branch_track(branch_if_in),
                   .branch_addr(branch_address_exe_out),
                   .instruction(instruction_if_out),
@@ -24,7 +24,7 @@ module ARM_CPU(input clk ,rst);
   wire [31: 0] pc_in_id, pc_id_out, instruction_id_in;
   IF2ID if2id(.clk(clk),
               .rst(rst),
-              .freeze(hazard_detected),
+              .freeze(hazard),
               .flush(flush),
               .pc_in(pc_out_if),
               .instruction_in(instruction_if_out),
@@ -41,7 +41,7 @@ module ARM_CPU(input clk ,rst);
   IDSTAGE idSTAGE(.clk(clk),
                   .rst(rst),
                   .write_back_en(wb_en_id_in),
-                  .hazard(hazard_detected),
+                  .hazard(hazard),
                   .pc_in(pc_in_id),
                   .instruction(instruction_id_in),
                   .reg_data_wb(wb_data_id_in),
@@ -102,8 +102,9 @@ module ARM_CPU(input clk ,rst);
                 .b_signed_imm_out(b_signed_imm_exe_in),
                 .shifter_operand_out(shifter_operand_exe_in));
 
-
+	wire [1:0] sel_src1, sel_src2;
   wire [31: 0] result_exe_out;
+	wire[31: 0] result_mem_in, reg2_mem_in;
   EXEstage exeSTAGE(.I(I_exe_in),
                     .mem_read(mem_read_exe_in),
                     .mem_write(mem_write_exe_in),
@@ -112,6 +113,10 @@ module ARM_CPU(input clk ,rst);
                     .pc_in(pc_exe_in),
                     .reg1(reg1_exe_in),
                     .reg2(reg2_exe_in),
+										.forwarding_result(result_mem_in),
+										.forwarding_wb(wb_data_id_in),
+										.sel_src1(sel_src1),
+										.sel_src2(sel_src2),
                     .shifter_operand(shifter_operand_exe_in),
                     .b_signed_imm(b_signed_imm_exe_in),
                     .branch_address(branch_address_exe_out),
@@ -121,7 +126,6 @@ module ARM_CPU(input clk ,rst);
 
   wire wb_en_mem_wb, mem_read_mem_in, mem_write_mem_in;
   wire [3: 0] dest_mem_wb;
-  wire[31: 0] result_mem_in, reg2_mem_in;
   EXE2MEM exe2mem(.clk(clk),
                   .rst(rst),
                   .wb_en_in(wb_en_id_mem),
@@ -168,11 +172,25 @@ module ARM_CPU(input clk ,rst);
                   .result(wb_data_id_in));
 
   HazardDetectionUnit hazard_detection_unit(.src1(src1),
-                                             .src2(src2),
-                                             .Exe_Dest(dest_id_mem),
-                                             .Mem_Dest(dest_mem_wb),
-                                             .Mem_WB_EN(wb_en_mem_wb),
-                                             .Exe_WB_EN(wb_en_id_mem),
-                                             .two_src(two_src),
-                                             .hazard_detected(hazard_detected));
+									.src2(src2),
+									.Exe_Dest(dest_id_mem),
+									.Mem_Dest(dest_mem_wb),
+									.Mem_WB_EN(wb_en_mem_wb),
+									.Exe_WB_EN(wb_en_id_mem),
+									.two_src(two_src),
+									.hazard_detected(hazard_detected));
+
+	wire ignore_hazard;
+	assign hazard = hazard_detected & ~ignore_hazard;
+
+	Forwarding forwarding_unit(.en_forwarding(1'b1),
+								.WB_wb_en(wb_en_id_in),
+								.MEM_wb_en(wb_en_mem_wb),
+								.MEM_dst(dest_mem_wb),
+								.WB_dst(dest_id_in),
+								.ID_src1(src1),
+								.ID_src2(src2),
+								.sel_src1(sel_src1),
+								.sel_src2(sel_src2),
+								.ignore_hazard(ignore_hazard));
 endmodule
