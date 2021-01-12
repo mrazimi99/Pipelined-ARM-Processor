@@ -180,10 +180,11 @@ module ARM_CPU(input clk ,rst);
 									.two_src(two_src),
 									.hazard_detected(hazard_detected));
 
-	wire ignore_hazard;
-	assign hazard = hazard_detected & ~ignore_hazard;
+	wire ignore_hazard, en_forwarding;
+	assign en_forwarding = 1'b1;
+	assign hazard = en_forwarding ? 1'b0 : hazard_detected;
 
-	Forwarding forwarding_unit(.en_forwarding(1'b1),
+	Forwarding forwarding_unit(.en_forwarding(en_forwarding),
 								.WB_wb_en(wb_en_id_in),
 								.MEM_wb_en(wb_en_mem_wb),
 								.MEM_dst(dest_mem_wb),
