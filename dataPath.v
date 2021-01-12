@@ -2,7 +2,7 @@ module ARM_CPU(input clk ,rst);
 
   wire status_enable, flush;
   wire [3: 0] status_exe_out, status_reg;
-  wire hazard_detected, hazard;
+  wire hazard_detected;
   StatusRegister statusRegister(.clk(clk),
                                 .rst(rst),
                                 .enable(status_enable),
@@ -15,7 +15,7 @@ module ARM_CPU(input clk ,rst);
   wire [31: 0] instruction_if_out, pc_out_if, branch_address_exe_out;
   IFSTAGE ifStage(.clk(clk),
                   .rst(rst),
-                  .freeze(hazard),
+                  .freeze(hazard_detected),
                   .branch_track(branch_if_in),
                   .branch_addr(branch_address_exe_out),
                   .instruction(instruction_if_out),
@@ -24,7 +24,7 @@ module ARM_CPU(input clk ,rst);
   wire [31: 0] pc_in_id, pc_id_out, instruction_id_in;
   IF2ID if2id(.clk(clk),
               .rst(rst),
-              .freeze(hazard),
+              .freeze(hazard_detected),
               .flush(flush),
               .pc_in(pc_out_if),
               .instruction_in(instruction_if_out),
@@ -41,7 +41,7 @@ module ARM_CPU(input clk ,rst);
   IDSTAGE idSTAGE(.clk(clk),
                   .rst(rst),
                   .write_back_en(wb_en_id_in),
-                  .hazard(hazard),
+                  .hazard(hazard_detected),
                   .pc_in(pc_in_id),
                   .instruction(instruction_id_in),
                   .reg_data_wb(wb_data_id_in),
@@ -175,6 +175,8 @@ module ARM_CPU(input clk ,rst);
                   .mem_data(mem_data_wb_in),
                   .result(wb_data_id_in));
 
+	wire ignore_hazard;
+
   HazardDetectionUnit hazard_detection_unit(.src1(src1),
 									.src2(src2),
 									.Exe_Dest(dest_id_mem),
@@ -182,13 +184,11 @@ module ARM_CPU(input clk ,rst);
 									.Mem_WB_EN(wb_en_mem_wb),
 									.Exe_WB_EN(wb_en_id_mem),
 									.two_src(two_src),
-									.hazard_detected(hazard_detected));
+									.hazard_detected(hazard_detected),
+									.mem_read_en(mem_read_exe_in),
+									.ignore(ignore_hazard));
 
-	wire ignore_hazard, en_forwarding;
-	assign en_forwarding = 1'b1;
-	assign hazard = en_forwarding ? 1'b0 : hazard_detected;
-
-	Forwarding forwarding_unit(.en_forwarding(en_forwarding),
+	Forwarding forwarding_unit(.en_forwarding(1'b1),
 								.WB_wb_en(wb_en_id_in),
 								.MEM_wb_en(wb_en_mem_wb),
 								.MEM_dst(dest_mem_wb),
