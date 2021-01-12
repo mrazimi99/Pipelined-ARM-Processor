@@ -65,7 +65,7 @@ module ARM_CPU(input clk ,rst);
                   .shifter_operand(shifter_operand_id_out));
 
   wire mem_read_exe_in, mem_write_exe_in, wb_en_id_mem;
-  wire [3: 0] alu_command_exe_in, dest_id_mem, status_exe_in;
+  wire [3: 0] alu_command_exe_in, dest_id_mem, status_exe_in, src1_exe_in, src2_exe_in;
   wire [11: 0] shifter_operand_exe_in;
   wire [23: 0] b_signed_imm_exe_in;
   wire[31: 0] pc_exe_in, pc_out_exe, reg1_exe_in, reg2_exe_in;
@@ -85,6 +85,8 @@ module ARM_CPU(input clk ,rst);
                 .aluCommand_in(alu_command_id_out),
                 .dest_in(dest_id_out),
                 .status_in(status_reg),
+                .src1_in(src1),
+                .src2_in(src2),
                 .b_signed_imm_in(b_signed_imm_id_out),
                 .shifter_operand_in(shifter_operand_id_out),
                 .status_en_out(status_enable),
@@ -99,6 +101,8 @@ module ARM_CPU(input clk ,rst);
                 .aluCommand_out(alu_command_exe_in),
                 .dest_out(dest_id_mem),
                 .status_out(status_exe_in),
+                .src1_out(src1_exe_in),
+                .src2_out(src2_exe_in),
                 .b_signed_imm_out(b_signed_imm_exe_in),
                 .shifter_operand_out(shifter_operand_exe_in));
 
@@ -189,8 +193,8 @@ module ARM_CPU(input clk ,rst);
 								.MEM_wb_en(wb_en_mem_wb),
 								.MEM_dst(dest_mem_wb),
 								.WB_dst(dest_id_in),
-								.ID_src1(src1),
-								.ID_src2(src2),
+								.ID_src1(src1_exe_in),
+								.ID_src2(src2_exe_in),
 								.sel_src1(sel_src1),
 								.sel_src2(sel_src2),
 								.ignore_hazard(ignore_hazard));

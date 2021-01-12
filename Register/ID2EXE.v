@@ -1,9 +1,10 @@
 module ID2EXE (input clk, rst, flush, status_en_in, mem_read_in, mem_write_in,
                wb_en_in, branch_in, I_in, input[31: 0] pc_in, reg1_in, reg2_in,
-               input[3: 0] aluCommand_in, dest_in, status_in, input[23: 0] b_signed_imm_in,
-               input[11: 0] shifter_operand_in, output reg status_en_out, mem_read_out,
-               mem_write_out, wb_en_out, branch_out, I_out, output reg[31: 0] pc_out,
-               reg1_out, reg2_out, output reg[3: 0] aluCommand_out, dest_out, status_out,
+               input[3: 0] aluCommand_in, dest_in, status_in, src1_in, src2_in,
+               input[23: 0] b_signed_imm_in, input[11: 0] shifter_operand_in,
+               output reg status_en_out, mem_read_out, mem_write_out, wb_en_out,
+               branch_out, I_out, output reg[31: 0] pc_out, reg1_out, reg2_out,
+               output reg[3: 0] aluCommand_out, dest_out, status_out, src1_out, src2_out,
                output reg[23: 0] b_signed_imm_out, output reg[11: 0] shifter_operand_out);
 
   always @ (posedge clk, posedge rst) begin
@@ -21,6 +22,8 @@ module ID2EXE (input clk, rst, flush, status_en_in, mem_read_in, mem_write_in,
       aluCommand_out <= 4'b 0;
       dest_out <= 4'b 0;
       status_out <= 4'b 0;
+      src1_out <= 4'b 0;
+      src2_out <= 4'b 0;
       b_signed_imm_out <= 24'b 0;
       shifter_operand_out <= 12'b 0;
     end
@@ -37,6 +40,8 @@ module ID2EXE (input clk, rst, flush, status_en_in, mem_read_in, mem_write_in,
       aluCommand_out <= aluCommand_in;
       dest_out <= dest_in;
       status_out <= status_in;
+      src1_out <= src1_in;
+      src2_out <= src2_in;
       b_signed_imm_out <= b_signed_imm_in;
       shifter_operand_out <= shifter_operand_in;
     end
